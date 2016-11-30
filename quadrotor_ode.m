@@ -113,6 +113,11 @@ dy(10) = ang_accel(2);
 dy(11) = y(12);
 dy(12) = ang_accel(3);
 
+% don't allow negative altitude
+if y(5) < 0.001
+    dy(5) = max([dy(5) 0]);
+    dy(6) = max([dy(6) 0]);
+end
 
 dy=dy';
 
