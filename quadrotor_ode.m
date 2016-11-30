@@ -6,7 +6,7 @@
 
 function [dy] = quadrotor_ode(t,y)
 
-global T m g Ax Ay Az C J w1 w2 w3 w4 l k b Ixx Iyy Izz
+global T m g M Ax Ay Az C J w1 w2 w3 w4 l k b Ixx Iyy Izz
 
 %%%%%%%%%%%% CALCULATE new w1-w4 USING QUADROTOR_PID.M %%%%%%%%%%%%
 %{
@@ -26,18 +26,18 @@ psi_dot = y(12)
 % can't use dy(2),dy(4),dy(6) (why?), so just calculate their values to
 % pass through to quadrotor_pid.m
 quadrotor_pid(t,y(1),y(2),((T/m) * (cos(y(11))*sin(y(9))*cos(y(7)) + sin(y(11))*sin(y(7)))) - (1/m)*Ax*y(2),y(3),y(4),((T/m) * (sin(y(11))*sin(y(9))*cos(y(7)) - cos(y(11))*sin(y(7)))) - (1/m)*Ay*y(4),y(5),y(6),-g + ((T/m) * (cos(y(9))*cos(y(7)))) - (1/m)*Az*y(6),y(7),y(8),y(9),y(10),y(11),y(12));
-
-% update combined forces of rotors create thrust T in direction of z-axis
+t
+%% update combined forces of rotors create thrust T in direction of z-axis
 T = k*(w1^2 + w2^2 + w3^2 + w4^2);
 
 
-% update tauB used to calculate angular accelerations
+%% update tauB used to calculate angular accelerations
 tauB(1) = l*k*(-w2^2 + w4^2); % for + rotor configuration (as opposed to x)
 tauB(2) = l*k*(-w1^2 + w3^2); % for + rotor configuration (as opposed to x)
 tauB(3) = b*w1^2 - b*w2^2 + b*w3^2 - b*w4^2; % effect of wi_dot is omitted (considered small) - also, rotors 2 and 4 spin in - direction
 
 
-% update C matrix used to calculate angular accelerations
+%% update C matrix used to calculate angular accelerations
 C(1,1) = 0;
 C(1,2) = (Iyy - Izz)*(y(10)*cos(y(7))*sin(y(7)) + y(12)*sin(y(7))^2*cos(y(9))) + ...
          (Izz - Iyy)*(y(12)*cos(y(7))^2*cos(y(9))) - ...
@@ -65,7 +65,7 @@ C(3,3) = (Iyy - Izz)*y(8)*cos(y(7))*sin(y(7))*(cos(y(9))^2) - ...
          Ixx*y(10)*cos(y(9))*sin(y(9));
 
 
-% update Jacobian used to calculate angular accelerations
+%% update Jacobian used to calculate angular accelerations
 J(1,1) = Ixx;
 J(1,2) = 0;
 J(1,3) = -Ixx*sin(y(9));
@@ -79,7 +79,7 @@ J(3,2) = (Iyy - Izz)*cos(y(7))*sin(y(7))*cos(y(9));
 J(3,3) = (Ixx*sin(y(9))^2) + (Iyy*(sin(y(7))^2)*(cos(y(9))^2)) + (Izz*(cos(y(7))^2)*(cos(y(9))^2));
 
 
-% calculate phi_dot_dot, theta_dot_dot, psi_dot_dot
+%% calculate phi_dot_dot, theta_dot_dot, psi_dot_dot
 ang_vel = [y(8) y(10) y(12)]'; % angular velocities
 ang_accel = J\(tauB' - C*ang_vel); % angular accelerations
 
@@ -114,10 +114,10 @@ dy(11) = y(12);
 dy(12) = ang_accel(3);
 
 % don't allow negative altitude
-if y(5) < 0.001
-    dy(5) = max([dy(5) 0]);
-    dy(6) = max([dy(6) 0]);
-end
+% if y(5) < 0.001
+%     dy(5) = max([dy(5) 0]);
+%     dy(6) = max([dy(6) 0]);
+% end
 
 dy=dy';
 
