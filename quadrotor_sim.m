@@ -218,6 +218,9 @@ subplot(311)
 plot(t_fixed,x, 'LineWidth', linewidth) % x
 hold on
 plot(t_fixed,desired_x(t_fixed), 'LineWidth', linewidth) % desired x
+max_x = max([x,desired_x(t_fixed)]);
+min_x = min([x,desired_x(t_fixed)]);
+axis([0, max(t_fixed), min_x-1,max_x+1]);
 legend('x', 'desired x')
 grid on
 title('X Position vs. Time')
@@ -228,6 +231,9 @@ subplot(312)
 plot(t_fixed,y_plt, 'LineWidth', linewidth) % y
 hold on
 plot(t_fixed,desired_y(t_fixed), 'LineWidth', linewidth) % desired y
+max_y = max([y_plt,desired_y(t_fixed)]);
+min_y = min([y_plt,desired_y(t_fixed)]);
+axis([0, max(t_fixed), min_y-1,max_y+1]);
 legend('y', 'desired y')
 grid on
 title('Y Position vs. Time')
@@ -238,6 +244,9 @@ subplot(313)
 plot(t_fixed,z, 'LineWidth', linewidth) % z
 hold on
 plot(t_fixed,desired_z(t_fixed), 'LineWidth', linewidth) % desired z
+max_z = max([z,desired_z(t_fixed)]);
+min_z = min([z,desired_z(t_fixed)]);
+axis([0, max(t_fixed), min_z-1,max_z+1]);
 legend('z', 'desired z')
 grid on
 title('Z Position vs. Time')
@@ -250,6 +259,9 @@ subplot(311)
 plot(t_fixed,phi, 'LineWidth', linewidth) % phi
 hold on
 plot(t_store_plt, phi_store, 'LineWidth', linewidth) % desired phi
+max_phi = max([phi,phi_store]);
+min_phi = min([phi,phi_store]);
+axis([0, max(t_fixed), min_phi-1,max_phi+1]);
 legend('roll', 'desired roll')
 grid on
 title('Angular Position vs. Time')
@@ -260,6 +272,9 @@ subplot(312)
 plot(t_fixed,theta, 'LineWidth', linewidth) % theta
 hold on
 plot(t_store_plt, theta_store, 'LineWidth', linewidth) % desired theta
+max_theta = max([phi,theta_store]);
+min_theta = min([phi,theta_store]);
+axis([0, max(t_fixed), min_theta-1,max_theta+1]);
 legend('pitch', 'desired pitch')
 grid on
 title('Angular Position vs. Time')
@@ -270,6 +285,9 @@ subplot(313)
 plot(t_fixed,psi, 'LineWidth', linewidth) % psi
 hold on
 plot(t_store_plt, psi_store, 'LineWidth', linewidth) % desired psi
+max_psi = max([psi,psi_store]);
+min_psi = min([psi,psi_store]);
+axis([0, max(t_fixed), min_psi-1,max_psi+1]);
 legend('yaw', 'desired yaw')
 grid on
 title('Angular Position vs. Time')
