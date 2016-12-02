@@ -24,7 +24,7 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
     % !!!! Comment out one of the above sets of Blocks when running !!!!
     
     %Hardwire desired angles
-    desired_phi = 0;
+    desired_phi = 0.1;
     desired_phi_dot = 0;
     desired_theta = 0;
     desired_theta_dot = 0;
