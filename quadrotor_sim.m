@@ -180,12 +180,36 @@ time = [0, sim_time];
 options = odeset('RelTol',1e-7,'AbsTol',1e-7,'Stats','on');
 [t,y] = ode45(@quadrotor_ode,time,y,options);
 
+%% LINEAR INTERPOLATION TO FIXED TIME STEP TO REDUCE PLOTTING TIME
+time_step = 0.05;
+times = 0:time_step:max(t); % times at which to update figure
+t_fixed = interp1(t,t,times);
+
+    x = interp1(t,y(:,1),times);
+    y_plt = interp1(t,y(:,3),times);
+    z = interp1(t,y(:,5),times);
+    phi = interp1(t,y(:,7),times);
+    theta = interp1(t,y(:,9),times);
+    psi = interp1(t,y(:,11),times);
+
+    
+[t_store,ia,~] = unique(t_store);
+t_store_plt = interp1(t_store,t_store,times);
+phi_store = interp1(t_store,phi_store(ia),times);
+theta_store = interp1(t_store,theta_store(ia),times);
+psi_store = interp1(t_store,psi_store(ia),times);
+w1_store = interp1(t_store,w1_store(ia),times);
+w2_store = interp1(t_store,w2_store(ia),times);
+w3_store = interp1(t_store,w3_store(ia),times);
+w4_store = interp1(t_store,w4_store(ia),times);
+
+
 %% PLOT XYZ data
 figure('units','normalized','outerposition',[0 0 1 1])
 subplot(311)
-plot(t,y(:,1), 'LineWidth', linewidth) % x
+plot(t_fixed,x, 'LineWidth', linewidth) % x
 hold on
-plot(t,desired_x(t), 'LineWidth', linewidth) % desired x
+plot(t_fixed,desired_x(t_fixed), 'LineWidth', linewidth) % desired x
 legend('x', 'desired x')
 grid on
 title('X Position vs. Time')
@@ -193,9 +217,9 @@ xlabel('time (s)')
 ylabel('position (m)')
 
 subplot(312)
-plot(t,y(:,3), 'LineWidth', linewidth) % y
+plot(t_fixed,y_plt, 'LineWidth', linewidth) % y
 hold on
-plot(t,desired_y(t), 'LineWidth', linewidth) % desired y
+plot(t_fixed,desired_y(t_fixed), 'LineWidth', linewidth) % desired y
 legend('y', 'desired y')
 grid on
 title('Y Position vs. Time')
@@ -203,9 +227,9 @@ xlabel('time (s)')
 ylabel('position (m)')
 
 subplot(313)
-plot(t,y(:,5), 'LineWidth', linewidth) % z
+plot(t_fixed,z, 'LineWidth', linewidth) % z
 hold on
-plot(t,desired_z(t), 'LineWidth', linewidth) % desired z
+plot(t_fixed,desired_z(t_fixed), 'LineWidth', linewidth) % desired z
 legend('z', 'desired z')
 grid on
 title('Z Position vs. Time')
@@ -215,9 +239,9 @@ ylabel('position (m)')
 %% PLOT ANGLES
 figure('units','normalized','outerposition',[0 0 1 1])
 subplot(311)
-plot(t,y(:,7), 'LineWidth', linewidth) % phi
+plot(t_fixed,phi, 'LineWidth', linewidth) % phi
 hold on
-plot(t_store, phi_store, 'LineWidth', linewidth) % desired phi
+plot(t_store_plt, phi_store, 'LineWidth', linewidth) % desired phi
 legend('roll', 'desired roll')
 grid on
 title('Angular Position vs. Time')
@@ -225,9 +249,9 @@ xlabel('time (s)')
 ylabel('angular position (rad)')
 
 subplot(312)
-plot(t,y(:,9), 'LineWidth', linewidth) % theta
+plot(t_fixed,theta, 'LineWidth', linewidth) % theta
 hold on
-plot(t_store, theta_store, 'LineWidth', linewidth) % desired theta
+plot(t_store_plt, theta_store, 'LineWidth', linewidth) % desired theta
 legend('pitch', 'desired pitch')
 grid on
 title('Angular Position vs. Time')
@@ -235,9 +259,9 @@ xlabel('time (s)')
 ylabel('angular position (rad)')
 
 subplot(313)
-plot(t,y(:,11), 'LineWidth', linewidth) % psi
+plot(t_fixed,psi, 'LineWidth', linewidth) % psi
 hold on
-plot(t_store, psi_store, 'LineWidth', linewidth) % desired psi
+plot(t_store_plt, psi_store, 'LineWidth', linewidth) % desired psi
 legend('yaw', 'desired yaw')
 grid on
 title('Angular Position vs. Time')
@@ -255,13 +279,13 @@ ylabel('angular position (rad)')
 
 figure('units','normalized','outerposition',[0 0 1 1])
 subplot(111)
-plot(t_store, w1_store, 'LineWidth', linewidth)
+plot(t_store_plt, w1_store, 'LineWidth', linewidth)
 hold on
-plot(t_store, w2_store, 'LineWidth', linewidth)
+plot(t_store_plt, w2_store, 'LineWidth', linewidth)
 hold on
-plot(t_store, w3_store, 'LineWidth', linewidth)
+plot(t_store_plt, w3_store, 'LineWidth', linewidth)
 hold on
-plot(t_store, w4_store, 'LineWidth', linewidth)
+plot(t_store_plt, w4_store, 'LineWidth', linewidth)
 legend('\omega_1','\omega_2','\omega_3','\omega_4')
 grid on
 title('Motor Angular Velocities vs. Time')
