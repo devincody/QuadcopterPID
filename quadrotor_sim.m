@@ -44,14 +44,14 @@ K_p_z = 8.85*0.468;
 K_d_z = 3*0.468;
 
 K_i_phi = .75*10^-5;
-K_p_phi = 3*10^-3;
+K_p_phi = 3*10^-4;
 K_d_phi = .75*10^-3;
 
-K_i_theta = 3*10^-5;
-K_p_theta = 3*10^-3;
-K_d_theta = .75*10^-3;
+K_i_theta = K_i_phi;
+K_p_theta = K_p_phi;
+K_d_theta = K_d_phi;
 
-K_i_psi = 3*10^-5;
+K_i_psi = 3*10^-6;
 K_p_psi = 3*10^-3;
 K_d_psi = .75*10^-3;
 
