@@ -7,8 +7,8 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
             desired_x_ddot desired_y_ddot desired_z_ddot ...
             K_p_z K_d_z K_p_phi K_d_phi K_p_theta K_d_theta K_p_psi K_d_psi ...% proportional, derivative gains for angles, Z
             K_i_z K_i_phi K_i_theta K_i_psi ...                                % integral gains for angles, Z
-            K_p_y K_d_y K_i_y K_p_x K_d_x K_i_x...                                         
-            phi_int_err theta_int_err psi_int_err z_int_err x_int_err y_int_err...
+            K_p_y K_d_y K_p_x K_d_x ...                                         
+            phi_int_err theta_int_err psi_int_err z_int_err...
             phi_store theta_store psi_store ...
             w1_store w2_store w3_store w4_store t_store
 
@@ -21,12 +21,13 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
     z_dot_err = desired_z_dot(t) - z_dot;
     
     if t <= .0001
-        x_int_err = 0;
-        y_int_err = 0;
+        phi_int_err = 0;
+        theta_int_err = 0;
+        psi_int_err = 0;
+        z_int_err = 0;
     end
     
-    x_int_err = x_int_err + x_err;
-    y_int_err = y_int_err + y_err;
+    
     
 
     %% Calculate Desired Angles (possibly from PID loop with desired xyz)
@@ -37,16 +38,16 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
     desired_psi_dot = 0;
     
     %Hardwire desired angles
-%     desired_phi = 0.3;
+%     desired_phi = 0;
 %     desired_phi_dot = 0;
 %     desired_theta = 0;
 %     desired_theta_dot = 0;
 
     
     % PID loop to calculate desired angles
-    desired_phi = -K_p_y*y_err - K_d_y*y_dot_err - K_i_y*y_int_err;
+    desired_phi = -K_p_y*y_err - K_d_y*y_dot_err;
     desired_phi_dot = -K_p_y*y_dot_err - K_d_y*(desired_y_ddot(t) - y_ddot);
-    desired_theta = K_p_x*x_err + K_d_x*x_dot_err + K_i_x*x_int_err;
+    desired_theta = K_p_x*x_err + K_d_x*x_dot_err;
     desired_theta_dot = K_p_x*x_dot_err + K_d_x*(desired_x_ddot(t) - x_ddot);
     
     
