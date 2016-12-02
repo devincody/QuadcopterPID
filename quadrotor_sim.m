@@ -249,7 +249,7 @@ xlabel('time (s)')
 ylabel('angular position (rad)')
 
 subplot(312)
-plot(t,y(:,9), 'LineWidth', linewidth) % theta
+plot(t_fixed,theta, 'LineWidth', linewidth) % theta
 hold on
 plot(t_store_plt, theta_store, 'LineWidth', linewidth) % desired theta
 legend('pitch', 'desired pitch')
@@ -259,7 +259,7 @@ xlabel('time (s)')
 ylabel('angular position (rad)')
 
 subplot(313)
-plot(t,y(:,11), 'LineWidth', linewidth) % psi
+plot(t_fixed,psi, 'LineWidth', linewidth) % psi
 hold on
 plot(t_store_plt, psi_store, 'LineWidth', linewidth) % desired psi
 legend('yaw', 'desired yaw')
