@@ -8,7 +8,7 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
             K_p_z K_d_z K_p_phi K_d_phi K_p_theta K_d_theta K_p_psi K_d_psi ...% proportional, derivative gains for angles, Z
             K_i_z K_i_phi K_i_theta K_i_psi ...                                % integral gains for angles, Z
             K_p_y K_d_y K_i_y K_p_x K_d_x K_i_x...                                         
-            phi_int_err theta_int_err psi_int_err z_int_err x_int_err y_int_err...
+            phi_int_err theta_int_err psi_int_err z_int_err x_int_err y_int_err...%needed to hold values between evaluations
             phi_store theta_store psi_store ...
             w1_store w2_store w3_store w4_store t_store
 
@@ -30,7 +30,7 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
     
 
     %% Calculate Desired Angles (possibly from PID loop with desired xyz)
-    % !!!! Comment out one of the above sets of Blocks when running !!!!
+    % !!!! Comment out one of the below sets of Blocks when running !!!!
     
     %Keep Always
     desired_psi = 0;
@@ -45,7 +45,8 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
     
     % PID loop to calculate desired angles
     desired_phi = -K_p_y*y_err - K_d_y*y_dot_err - K_i_y*y_int_err;
-    desired_phi_dot = -K_p_y*y_dot_err - K_d_y*(desired_y_ddot(t) - y_ddot);
+    desired_phi_dot = K_p_y*y_dot_err - K_d_y*(desired_y_ddot(t) - y_ddot);
+    
     desired_theta = K_p_x*x_err + K_d_x*x_dot_err + K_i_x*x_int_err;
     desired_theta_dot = K_p_x*x_dot_err + K_d_x*(desired_x_ddot(t) - x_ddot);
     
@@ -53,7 +54,8 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
 
     %% Calculate Angle Errors from Desired Angles
     phi_err = desired_phi - phi;
-    phi_dot_err = desired_phi_dot - phi_dot;
+    phi_dot_err = +desired_phi_dot - phi_dot;
+    
     theta_err = desired_theta - theta;
     theta_dot_err = desired_theta_dot - theta_dot;
     psi_err = desired_psi - psi;

@@ -30,12 +30,19 @@ M = [k k k k ; 0 -l*k 0 l*k; -l*k 0 l*k 0; b -b b -b]; % mixer matrix
 % desired_z_sym(time_sym) = 5./(1+exp(8-time_sym));
 % desired_z_sym(time_sym) = 10 + 0.*time_sym;
 % sigma = 1.5;
+
 sigma = 3;
 mu = 5;
 amp = 100;
-desired_x_sym(time_sym) = 10+ 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-40)^2/(2*sigma^2)); % as of now, must be zero
-desired_y_sym(time_sym) = 0+0*time_sym;
-desired_z_sym(time_sym) = amp*(1/sqrt(3*sigma^2*pi))*exp(-(time_sym-8)^2/(3*sigma^2));
+% desired_y_sym(time_sym) = 10 + 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-50)^2/(2*sigma^2));
+% desired_x_sym(time_sym) = 10 + 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-50)^2/(2*sigma^2));
+% desired_z_sym(time_sym) = amp*(1/sqrt(3*sigma^2*pi))*exp(-(time_sym-8)^2/(3*sigma^2));
+
+%10+ 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-50)^2/(2*sigma^2));
+
+desired_x_sym(time_sym) = 6*sin(time_sym/1.82);
+desired_y_sym(time_sym) = 6*cos(time_sym/1.82);
+desired_z_sym(time_sym) = time_sym/5;
 
 %% PID Gains
 % !!!! Only the Z gains have been tuned !!!!
@@ -70,7 +77,7 @@ K_i_x = K_i_y;
 
 %% plot settings
 linewidth = 1.5;
-sim_time = 100; % simulation runtime in seconds
+sim_time = 25; % simulation runtime in seconds
 animation_select = 0; % 0: no animation; 1: full motion, one central thrust vector
                       % 2: fixed at origin (only see angular position), one central thrust vector
                       % 3: full motion, four thrust vectors (one for each motor)
@@ -105,12 +112,12 @@ Iyy = 4.856*10^-3;
 Izz = 8.801*10^-3;
 
 %% Drag force coefficients for velocities (kg/s)
-% Ax = 0.25;
-% Ay = 0.25;
-% Az = 0.25;
-Ax = 0;
-Ay = 0;
-Az = 0;
+Ax = 0.25;
+Ay = 0.25;
+Az = 0.25;
+% Ax = 0;
+% Ay = 0;
+% Az = 0;
 
 %% Initial conditions
 x0 = 0;
