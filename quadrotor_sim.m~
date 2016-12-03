@@ -7,7 +7,7 @@
 clear all %#ok<CLALL>
 syms time_sym
 
-global T Tmax m g M Ax Ay Az C J l k b Ixx Iyy Izz w1 w2 w3 w4 ...
+global T m g M Ax Ay Az C J l k b Ixx Iyy Izz w1 w2 w3 w4 ...
     desired_x desired_y desired_z ...
     desired_x_dot desired_y_dot desired_z_dot ...
     desired_x_ddot desired_y_ddot desired_z_ddot ...
@@ -62,7 +62,7 @@ K_d_x = K_d_y;
 
 %% plot settings
 linewidth = 1.5;
-sim_time = .4; % simulation runtime in seconds
+sim_time = 4; % simulation runtime in seconds
 animation_select = 0; % 0: no animation; 1: full motion, one central thrust vector
                       % 2: fixed at origin (only see angular position), one central thrust vector
                       % 3: full motion, four thrust vectors (one for each motor)
@@ -97,14 +97,12 @@ Iyy = 4.856*10^-3;
 Izz = 8.801*10^-3;
 
 %% Drag force coefficients for velocities (kg/s)
-Ax = 0.25;
-Ay = 0.25;
-Az = 0.25;
-% Ax = 0;
-% Ay = 0;
-% Az = 0;
-
-Tmax = k*4*(2090^2); % max thrust (all 4 motors at full angular velocity ~20000 RMP = 2090 rad/sec)
+% Ax = 0.25;
+% Ay = 0.25;
+% Az = 0.25;
+Ax = 0;
+Ay = 0;
+Az = 0;
 
 %% Initial conditions
 x0 = 0;
@@ -320,5 +318,3 @@ ylabel('angular velocity (rad/sec)')
 %         end
 %     end
 % end
-
-[ts,tmax] = fast_z(0,10);
