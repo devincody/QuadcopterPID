@@ -44,8 +44,8 @@ function quadrotor_pid(t,x,x_dot,x_ddot,y,y_dot,y_ddot,z,z_dot,z_ddot,phi,phi_do
 
     
     % PID loop to calculate desired angles
-    desired_phi = -K_p_y*y_err - K_d_y*y_dot_err - K_i_y*y_int_err;
-    desired_phi_dot = K_p_y*y_dot_err - K_d_y*(desired_y_ddot(t) - y_ddot);
+    desired_phi = -K_p_y*y_err + K_d_y*y_dot_err + K_i_y*y_int_err;
+    desired_phi_dot = K_p_y*y_dot_err + K_d_y*(-desired_y_ddot(t) + y_ddot);
     
     desired_theta = K_p_x*x_err + K_d_x*x_dot_err + K_i_x*x_int_err;
     desired_theta_dot = K_p_x*x_dot_err + K_d_x*(desired_x_ddot(t) - x_ddot);

@@ -27,9 +27,7 @@ psi_dot = y(12)
 % pass through to quadrotor_pid.m
 quadrotor_pid(t,y(1),y(2),((T/m) * (cos(y(11))*sin(y(9))*cos(y(7)) + sin(y(11))*sin(y(7)))) - (1/m)*Ax*y(2),y(3),y(4),((T/m) * (sin(y(11))*sin(y(9))*cos(y(7)) - cos(y(11))*sin(y(7)))) - (1/m)*Ay*y(4),y(5),y(6),-g + ((T/m) * (cos(y(9))*cos(y(7)))) - (1/m)*Az*y(6),y(7),y(8),y(9),y(10),y(11),y(12));
 
-if mod(t,.03) < .001
-    t
-end
+if mod(t,1) M
 
 %% update combined forces of rotors create thrust T in direction of z-axis
 T = k*(w1^2 + w2^2 + w3^2 + w4^2);

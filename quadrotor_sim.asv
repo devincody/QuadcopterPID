@@ -7,14 +7,14 @@
 clear all %#ok<CLALL>
 syms time_sym
 
-global T Tmax m g M Ax Ay Az C J l k b Ixx Iyy Izz w1 w2 w3 w4 ...
+global T m g M Ax Ay Az C J l k b Ixx Iyy Izz w1 w2 w3 w4 ...
     desired_x desired_y desired_z ...
     desired_x_dot desired_y_dot desired_z_dot ...
     desired_x_ddot desired_y_ddot desired_z_ddot ...
     K_p_z K_d_z K_p_phi K_d_phi K_p_theta K_d_theta K_p_psi K_d_psi ...
     K_i_z K_i_phi K_i_theta K_i_psi ...
-    K_p_y K_d_y K_i_y K_p_x K_d_x K_i_x...     
-    phi_int_err theta_int_err psi_int_err z_int_err x_int_err y_int_err...
+    K_p_y K_d_y K_p_x K_d_x ...
+    phi_int_err theta_int_err psi_int_err z_int_err ...
     phi_store theta_store psi_store ...
     w1_store w2_store w3_store w4_store t_store
 
@@ -30,56 +30,39 @@ M = [k k k k ; 0 -l*k 0 l*k; -l*k 0 l*k 0; b -b b -b]; % mixer matrix
 % desired_z_sym(time_sym) = 5./(1+exp(8-time_sym));
 % desired_z_sym(time_sym) = 10 + 0.*time_sym;
 % sigma = 1.5;
-
 sigma = 3;
 mu = 5;
-amp = 100;
-% desired_y_sym(time_sym) = 10 + 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-50)^2/(2*sigma^2));
-% desired_x_sym(time_sym) = 10 + 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-50)^2/(2*sigma^2));
-% desired_z_sym(time_sym) = amp*(1/sqrt(3*sigma^2*pi))*exp(-(time_sym-8)^2/(3*sigma^2));
-
-%10+ 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-50)^2/(2*sigma^2));
-
-desired_x_sym(time_sym) = 6*sin(time_sym/1.82);
-desired_y_sym(time_sym) = 6*cos(time_sym/1.82);
-desired_z_sym(time_sym) = time_sym/5;
+amp = 10;
+desired_x_sym(time_sym) = 0*25*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-15)^2/(2*sigma^2)); % as of now, must be zero
+desired_y_sym(time_sym) = 0+0*time_sym;
+desired_z_sym(time_sym) = 0*amp*(1/sqrt(3*sigma^2*pi))*exp(-(time_sym-8)^2/(3*sigma^2));
 
 %% PID Gains
 % !!!! Only the Z gains have been tuned !!!!
-K_i_z = .005;
+K_i_z = .0007;
 K_p_z = 8.85*0.468;
 K_d_z = 3*0.468;
 
-K_i_phi = 2*10^-5;
-K_p_phi = 12*10^-3;
+K_i_phi = 2*10^-6;
+K_p_phi = 7*10^-3;
 K_d_phi = 8*10^-3;
 
 K_i_theta = K_i_phi;
 K_p_theta = K_p_phi;
 K_d_theta = K_d_phi;
 
-K_i_psi = .6*10^-6;
+K_i_psi = 3*10^-6;
 K_p_psi = 3*10^-3;
-K_d_psi = 8*10^-3;
+K_d_psi = .75*10^-3;
 
-K_p_y = .12;
-K_d_y = 1.6;
-K_i_y = .1*10^-5;
-
-% K_p_y = .013;
-% K_d_y = .06;
-% K_i_y = 1.1*10^-5;
-
-
+K_p_y = .01;
+K_d_y = .007;
 K_p_x = K_p_y;
 K_d_x = K_d_y;
-K_i_x = K_i_y;
 
 %% plot settings
 linewidth = 1.5;
-
-sim_time = 25; % simulation runtime in seconds
-
+sim_time = 10; % simulation runtime in seconds
 animation_select = 0; % 0: no animation; 1: full motion, one central thrust vector
                       % 2: fixed at origin (only see angular position), one central thrust vector
                       % 3: full motion, four thrust vectors (one for each motor)
@@ -114,14 +97,12 @@ Iyy = 4.856*10^-3;
 Izz = 8.801*10^-3;
 
 %% Drag force coefficients for velocities (kg/s)
-Ax = 0.25;
-Ay = 0.25;
-Az = 0.25;
-% Ax = 0;
-% Ay = 0;
-% Az = 0;
-
-Tmax = k*4*(2090^2); % max thrust (all 4 motors at full angular velocity ~20000 RMP = 2090 rad/sec)
+% Ax = 0.25;
+% Ay = 0.25;
+% Az = 0.25;
+Ax = 0;
+Ay = 0;
+Az = 0;
 
 %% Initial conditions
 x0 = 0;
@@ -204,14 +185,14 @@ time_step = 0.05;
 times = 0:time_step:max(t); % times at which to update figure
 t_fixed = interp1(t,t,times);
 
-x = interp1(t,y(:,1),times);
-y_plt = interp1(t,y(:,3),times);
-z = interp1(t,y(:,5),times);
-phi = interp1(t,y(:,7),times);
-theta = interp1(t,y(:,9),times);
-psi = interp1(t,y(:,11),times);
+    x = interp1(t,y(:,1),times);
+    y_plt = interp1(t,y(:,3),times);
+    z = interp1(t,y(:,5),times);
+    phi = interp1(t,y(:,7),times);
+    theta = interp1(t,y(:,9),times);
+    psi = interp1(t,y(:,11),times);
 
-% filter out duplicate values of t (due to failed ode solver attempts)
+    
 [t_store,ia,~] = unique(t_store);
 t_store_plt = interp1(t_store,t_store,times);
 phi_store = interp1(t_store,phi_store(ia),times);
@@ -229,9 +210,6 @@ subplot(311)
 plot(t_fixed,x, 'LineWidth', linewidth) % x
 hold on
 plot(t_fixed,desired_x(t_fixed), 'LineWidth', linewidth) % desired x
-max_x = max([x,desired_x(t_fixed)]);
-min_x = min([x,desired_x(t_fixed)]);
-axis([0, max(t_fixed), min_x-1,max_x+1]);
 legend('x', 'desired x')
 grid on
 title('X Position vs. Time')
@@ -242,9 +220,6 @@ subplot(312)
 plot(t_fixed,y_plt, 'LineWidth', linewidth) % y
 hold on
 plot(t_fixed,desired_y(t_fixed), 'LineWidth', linewidth) % desired y
-max_y = max([y_plt,desired_y(t_fixed)]);
-min_y = min([y_plt,desired_y(t_fixed)]);
-axis([0, max(t_fixed), min_y-1,max_y+1]);
 legend('y', 'desired y')
 grid on
 title('Y Position vs. Time')
@@ -255,9 +230,6 @@ subplot(313)
 plot(t_fixed,z, 'LineWidth', linewidth) % z
 hold on
 plot(t_fixed,desired_z(t_fixed), 'LineWidth', linewidth) % desired z
-max_z = max([z,desired_z(t_fixed)]);
-min_z = min([z,desired_z(t_fixed)]);
-axis([0, max(t_fixed), min_z-1,max_z+1]);
 legend('z', 'desired z')
 grid on
 title('Z Position vs. Time')
@@ -270,9 +242,6 @@ subplot(311)
 plot(t_fixed,phi, 'LineWidth', linewidth) % phi
 hold on
 plot(t_store_plt, phi_store, 'LineWidth', linewidth) % desired phi
-max_phi = max([phi,phi_store]);
-min_phi = min([phi,phi_store]);
-axis([0, max(t_fixed), min_phi-1,max_phi+1]);
 legend('roll', 'desired roll')
 grid on
 title('Angular Position vs. Time')
@@ -283,9 +252,6 @@ subplot(312)
 plot(t_fixed,theta, 'LineWidth', linewidth) % theta
 hold on
 plot(t_store_plt, theta_store, 'LineWidth', linewidth) % desired theta
-max_theta = max([phi,theta_store]);
-min_theta = min([phi,theta_store]);
-axis([0, max(t_fixed), min_theta-1,max_theta+1]);
 legend('pitch', 'desired pitch')
 grid on
 title('Angular Position vs. Time')
@@ -296,9 +262,6 @@ subplot(313)
 plot(t_fixed,psi, 'LineWidth', linewidth) % psi
 hold on
 plot(t_store_plt, psi_store, 'LineWidth', linewidth) % desired psi
-max_psi = max([psi,psi_store]);
-min_psi = min([psi,psi_store]);
-axis([0, max(t_fixed), min_psi-1,max_psi+1]);
 legend('yaw', 'desired yaw')
 grid on
 title('Angular Position vs. Time')
@@ -355,7 +318,3 @@ ylabel('angular velocity (rad/sec)')
 %         end
 %     end
 % end
-
-[ts,tmax] = fast_z(0,10);
-ts
-tmax
