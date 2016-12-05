@@ -4,6 +4,14 @@
 % A. Arkebauer, D. Cody
 % October 25, 2016
 
+
+% A = Amat(psi);
+% B = zeros(12,4);
+% B(6,1) = 1/m;
+% B(10,2) = Ixx;
+% B(11,3) = Iyy;
+% B(12,4) = Izz;
+
 clear all %#ok<CLALL>
 syms time_sym
 
@@ -40,9 +48,32 @@ amp = 100;
 
 %10+ 100*(1/sqrt(2*sigma^2*pi))*exp(-(time_sym-50)^2/(2*sigma^2));
 
-desired_x_sym(time_sym) = 6*sin(time_sym/1.82);
-desired_y_sym(time_sym) = 6*cos(time_sym/1.82);
-desired_z_sym(time_sym) = time_sym/5;
+% desired_x_sym(time_sym) = 6*sin(time_sym/1.82);
+% desired_y_sym(time_sym) = 6*cos(time_sym/1.82);
+% desired_z_sym(time_sym) = time_sym/5;
+% % % desired_x_sym(time_sym) = 0*time_sym;
+% % % desired_y_sym(time_sym) = 0*time_sym;
+% % % desired_z_sym(time_sym) = 10 + 0*time_sym;
+
+
+% % % "with state observer" folder (sim time = 40; time step = .1) - START AT x0=0, y0=0, z0=0 - PID sucks for this one
+% % desired_y_sym(time_sym) = 6*sin(time_sym/5);
+% % desired_x_sym(time_sym) = 6*cos(time_sym/5)*sigmf(time_sym,[2,4]);
+% % desired_z_sym(time_sym) = time_sym/5 + cos(time_sym);
+
+% "step to a point" folder (sim time = 7; time step = .03) - START AT x0=0, y0=0, z0=0 - PID is ok for this one
+desired_x_sym(time_sym) = 3 + 0.0*time_sym;
+desired_y_sym(time_sym) = 3 + 0.0*time_sym;
+desired_z_sym(time_sym) = 3 + 0.0*time_sym;
+
+% % % "spiral" folder (sim time = 8; time step = .1) - START AT x0=1, y0=0, z0=0 - PID sucks for this one
+% % desired_y_sym(time_sym) = sin(2*time_sym);
+% % desired_x_sym(time_sym) = cos(2*time_sym);
+% % desired_z_sym(time_sym) = time_sym;
+
+sim_time = 35; % simulation runtime in seconds
+time_step = 0.1; % time increment for plotting
+
 
 %% PID Gains
 % !!!! Only the Z gains have been tuned !!!!
@@ -77,8 +108,6 @@ K_i_x = K_i_y;
 
 %% plot settings
 linewidth = 1.5;
-
-sim_time = 25; % simulation runtime in seconds
 
 animation_select = 0; % 0: no animation; 1: full motion, one central thrust vector
                       % 2: fixed at origin (only see angular position), one central thrust vector
@@ -197,10 +226,29 @@ J = zeros(3);
 %% RUN SIMULATION
 time = [0, sim_time];
 options = odeset('RelTol',1e-5,'AbsTol',1e-5,'Stats','on');
-[t,y] = ode45(@quadrotor_ode,time,y,options);
+[t,y] = ode45(@quadrotor_ode,time,y(end,:),options);
+
+
+%% Optimal control of altitude - RISE FROM Z0 TO Z1 IN LOWEST TIME
+
+% % calculate switching and max times for optimal control of altitude
+% global ts tmax
+% [ts,tmax] = fast_z(10,0)
+% ts = .2415
+% tmax = 1.02709
+% 
+% time = [0, double(tmax)];
+% options = odeset('RelTol',1e-5,'AbsTol',1e-5,'Stats','on','MaxStep',.001);
+% [t,y] = ode45(@quadrotor_ode,time,y,options);
+% 
+% time = [t(end), sim_time];
+% options = odeset('RelTol',1e-5,'AbsTol',1e-5,'Stats','on');
+% [t2,y2] = ode45(@quadrotor_ode,time,y(end,:),options);
+% 
+% t = [t(1:end-1);t2];
+% y = [y(1:end-1,:);y2];
 
 %% LINEAR INTERPOLATION TO FIXED TIME STEP TO REDUCE PLOTTING TIME
-time_step = 0.05;
 times = 0:time_step:max(t); % times at which to update figure
 t_fixed = interp1(t,t,times);
 
@@ -333,7 +381,7 @@ ylabel('angular velocity (rad/sec)')
 % if animation_select == 1
 %     % animate quad motion - view_quad has one thrust vector attached to center
 %     % of mass
-%     view_quad(y(:,1),y(:,4),y(:,7),y(:,10),y(:,13),y(:,16),t)
+    view_quad(x,y_plt,z,phi,theta,psi,t_fixed,time_step)
 % else
 %     if animation_select == 2
 %         
@@ -355,7 +403,3 @@ ylabel('angular velocity (rad/sec)')
 %         end
 %     end
 % end
-
-[ts,tmax] = fast_z(0,10);
-ts
-tmax

@@ -6,7 +6,8 @@
 
 function [dy] = quadrotor_ode(t,y)
 
-global T m g M Ax Ay Az C J w1 w2 w3 w4 l k b Ixx Iyy Izz
+global T Tmax ts tmax m g M Ax Ay Az C J w1 w2 w3 w4 l k b Ixx Iyy Izz ...
+    w1_store w2_store w3_store w4_store
 
 %%%%%%%%%%%% CALCULATE new w1-w4 USING QUADROTOR_PID.M %%%%%%%%%%%%
 %{
@@ -25,15 +26,42 @@ psi_dot = y(12)
 %}
 % can't use dy(2),dy(4),dy(6) (why?), so just calculate their values to
 % pass through to quadrotor_pid.m
+
+
+
+
+
 quadrotor_pid(t,y(1),y(2),((T/m) * (cos(y(11))*sin(y(9))*cos(y(7)) + sin(y(11))*sin(y(7)))) - (1/m)*Ax*y(2),y(3),y(4),((T/m) * (sin(y(11))*sin(y(9))*cos(y(7)) - cos(y(11))*sin(y(7)))) - (1/m)*Ay*y(4),y(5),y(6),-g + ((T/m) * (cos(y(9))*cos(y(7)))) - (1/m)*Az*y(6),y(7),y(8),y(9),y(10),y(11),y(12));
 
 if mod(t,.03) < .001
     t
 end
 
+%% optimal control of altitude (z)
+if t < double(tmax)
+    if t < double(ts)
+        w1 = 2090;
+        w1_store(end) = w1;
+        w2 = 2090;
+        w2_store(end) = w2;
+        w3 = 2090;
+        w3_store(end) = w3;
+        w4 = 2090;
+        w4_store(end) = w4;
+    else
+        w1 = 0;
+        w1_store(end) = w1;
+        w2 = 0;
+        w2_store(end) = w2;
+        w3 = 0;
+        w3_store(end) = w3;
+        w4 = 0;
+        w4_store(end) = w4;
+    end
+end
+
 %% update combined forces of rotors create thrust T in direction of z-axis
 T = k*(w1^2 + w2^2 + w3^2 + w4^2);
-
 
 %% update tauB used to calculate angular accelerations
 tauB(1) = l*k*(-w2^2 + w4^2); % for + rotor configuration (as opposed to x)
